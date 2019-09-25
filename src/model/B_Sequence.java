@@ -36,27 +36,36 @@ public class B_Sequence {
 
 		positionGreater = findGreater(elementsOfS);
 		greater = elementsOfS[positionGreater];
-		
-		root = new Tree(greater, null, null);
 
-		System.out.println("The : 	"+positionGreater +"     " +greater);
-		
-		
+		root = new Tree(greater, null, null, null);
+
+		System.out.println("The : 	" + positionGreater + "     " + greater);
+
+		int[] toReturn = new int[elementsOfS.length + elementsToAdd.length];
+
+		// Agregar el arreglo recibido
 		for (int i = 0; i < elementsOfS.length; i++) {
-			if (elementsOfS[i] != greater) {
-				addNumber(root);
+			Tree toAdd = new Tree(elementsOfS[i], null, null, null);
+			boolean isGrowing = true;
+
+			if (elementsOfS[i] == greater) {
+				isGrowing = false;
 			}
+
+			addNumber(toAdd, isGrowing);
+
 		}
-		
-		//Tomar medio
-		//agregar primera mitad
-		//luego segunda mitad
+
+		// agregar primera mitad
+		// luego segunda mitad
 
 		for (int i = 0; i < elementsToAdd.length; i++) {
 			// Aqui se decide si se va agregando cada elemento al arrelgo
 
 			if (elementsToAdd[i] != greater) {
 
+			} else {
+				System.out.println(sizeOfS);
 			}
 		}
 
@@ -94,42 +103,49 @@ public class B_Sequence {
 	// repetir maximo dos veces mismo numero
 	// Convertir arbol en arreglo y retornar tamaño
 
-	public static void addNumber(Tree toAdd) {
-		addNumber(toAdd, root);
+	// Agregar Recibido
+	public static void addNumber(Tree toAdd, boolean isGrowing) {
+		addNumber(toAdd, isGrowing, root);
 	}
 
-	private static void addNumber(Tree toAdd, Tree current) {
-		boolean growing = true;
-
-		if (root.getValue() == greater) {
-			growing = false;
+	private static void addNumber(Tree toAdd, boolean isGrowing, Tree current) {
+		if (toAdd != root) {
+			if (isGrowing) {
+				if (current.getLeft() == null) {
+					current.setLeft(toAdd);
+					toAdd.setPrevious(current);
+				} else {
+					addNumber(toAdd, isGrowing, current.getLeft());
+				}
+			} else {
+				if (current.getRight() == null) {
+					current.setRight(toAdd);
+					toAdd.setPrevious(current);
+				} else {
+					addNumber(toAdd, isGrowing, current.getRight());
+				}
+			}
 		}
-
-		if(growing) {
-			
-			
-			
-			
-		}else {
-			
-		}
-		
-		
-		
-		
-		
 	}
+	
+	
+	
+	
+	
+	
 }
 
 class Tree {
 	private int value;
 	private Tree left;
 	private Tree right;
+	private Tree previous;
 
-	public Tree(int value, Tree left, Tree right) {
+	public Tree(int value, Tree left, Tree right, Tree previous) {
 		this.value = value;
 		this.left = left;
 		this.right = right;
+		this.previous = previous;
 	}
 
 	public int getValue() {
@@ -154,5 +170,13 @@ class Tree {
 
 	public void setRight(Tree right) {
 		this.right = right;
+	}
+
+	public Tree getPrevious() {
+		return previous;
+	}
+
+	public void setPrevious(Tree previous) {
+		this.previous = previous;
 	}
 }
