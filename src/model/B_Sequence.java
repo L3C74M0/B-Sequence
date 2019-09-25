@@ -56,14 +56,14 @@ public class B_Sequence {
 
 		}
 
-		// agregar primera mitad
-		// luego segunda mitad
-
+		// Agregar elementos recibidos
 		for (int i = 0; i < elementsToAdd.length; i++) {
-			// Aqui se decide si se va agregando cada elemento al arrelgo
-
 			if (elementsToAdd[i] != greater) {
+				if (addValue(elementsToAdd[i]) == true) {
+					sizeOfS++;
+				}
 
+				System.out.println(sizeOfS);
 			} else {
 				System.out.println(sizeOfS);
 			}
@@ -127,12 +127,17 @@ public class B_Sequence {
 			}
 		}
 	}
-	
-	
-	
-	
-	
-	
+
+	public static boolean addValue(int value) {
+		boolean is = false;
+		
+		
+		
+		
+
+		return is;
+	}
+
 }
 
 class Tree {
