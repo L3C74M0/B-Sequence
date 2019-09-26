@@ -9,6 +9,7 @@ public class B_Sequence {
 	private static int greater;
 	private static int positionGreater;
 	private static Tree root;
+	private static int veces;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -39,15 +40,13 @@ public class B_Sequence {
 
 		root = new Tree(greater, null, null, null);
 
-		System.out.println("The : 	" + positionGreater + "     " + greater);
-
-		int[] toReturn = new int[elementsOfS.length + elementsToAdd.length];
+//		int[] toReturn = new int[elementsOfS.length + elementsToAdd.length];
 
 		// Agregar el arreglo recibido
+		boolean isGrowing = true;
 		for (int i = 0; i < elementsOfS.length; i++) {
 			Tree toAdd = new Tree(elementsOfS[i], null, null, null);
-			boolean isGrowing = true;
-
+			
 			if (elementsOfS[i] == greater) {
 				isGrowing = false;
 			}
@@ -62,13 +61,16 @@ public class B_Sequence {
 				if (addValue(elementsToAdd[i]) == true) {
 					sizeOfS++;
 				}
-
 				System.out.println(sizeOfS);
 			} else {
-				System.out.println(sizeOfS);
+				System.out.println("\t No lo agrega\t");
+				System.out.print(sizeOfS + "\n");
 			}
 		}
-
+		
+		
+		//ordenar arbol de menor a mayor
+		//imprimirlo
 	}
 
 	public static int findGreater(int[] array) {
@@ -109,35 +111,109 @@ public class B_Sequence {
 	}
 
 	private static void addNumber(Tree toAdd, boolean isGrowing, Tree current) {
-		if (toAdd != root) {
+		if (toAdd.getValue() != root.getValue()) {
 			if (isGrowing) {
 				if (current.getLeft() == null) {
 					current.setLeft(toAdd);
 					toAdd.setPrevious(current);
 				} else {
-					addNumber(toAdd, isGrowing, current.getLeft());
+					addNumber(toAdd, true, current.getLeft());
 				}
 			} else {
 				if (current.getRight() == null) {
 					current.setRight(toAdd);
 					toAdd.setPrevious(current);
 				} else {
-					addNumber(toAdd, isGrowing, current.getRight());
+					addNumber(toAdd, false, current.getRight());
 				}
 			}
 		}
 	}
 
 	public static boolean addValue(int value) {
-		boolean is = false;
-		
-		
-		
-		
-
-		return is;
+		if (addNumberInTree(value)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
+	// Agregar Entradas
+	public static boolean addNumberInTree(int value) {
+		Tree toAdd = new Tree(value, null, null, null);
+		return addNumberInTree(toAdd, root);
+	}
+
+	private static boolean addNumberInTree(Tree toAdd, Tree current) {
+		if (toAdd.getValue() == root.getValue()) {
+			return false;
+		} else {
+			boolean izq = false;
+			boolean der = false;
+			
+			if (toAdd.getValue() == current.getValue()) {
+				System.out.println("\tYa esta");
+				veces+=1;
+				return true;
+			} else {
+				if (current.getLeft() != null) {
+					izq = addNumberInTree(toAdd, current.getLeft());
+				}
+				
+				if (current.getRight() != null) {
+					der = addNumberInTree(toAdd, current.getRight());
+				}
+
+				if(current.getLeft()==null) {
+					return false;
+				}
+				if(current.getRight()==null) {
+					return false;
+				}
+			}
+			
+			if (der == true) {
+				System.out.println("\tYa esta en los dos lados");
+				return false;
+			} else if (izq == true && der == false) {
+				// agregar en la derecha
+				System.out.println("\tAgregar en la der");
+				add(toAdd,false);
+				return true;
+			}else if(veces == 2){
+				return false;
+			} else if (izq == false) {
+				// Agregar en la izq
+				System.out.println("\tAgregar en la izq");
+				add(toAdd,true);
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+	
+	private static void add(Tree toAdd, boolean izq) {
+		add(toAdd,root, izq);
+	}
+	
+	private static void add(Tree toAdd, Tree current, boolean izq) {
+		if(izq) {
+			if (current.getLeft() == null) {
+				current.setLeft(toAdd);
+				toAdd.setPrevious(current);
+			} else {
+				add(toAdd, current.getLeft(),izq);
+			}
+		} else {
+			if (current.getRight() == null) {
+				current.setRight(toAdd);
+				toAdd.setPrevious(current);
+			} else {
+				add(toAdd,current.getRight(),izq);
+			}
+		}
+	}
 }
 
 class Tree {
