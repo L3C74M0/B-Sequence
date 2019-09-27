@@ -66,11 +66,7 @@ public class B_Sequence {
 
 		orderTree(root, true);
 
-		String output = "";
-
-		// Recorrer indorder to root then preorder to root
-
-		System.out.println(output);
+		System.out.println(printLeft() + " " + printRight());
 	}
 
 	public static int findGreater(int[] array) {
@@ -264,18 +260,33 @@ public class B_Sequence {
 
 	public static String printLeft(Tree currentNode) {
 		String tmp = "";
-		if (currentNode.getValue() != root.getValue()) {
-			if (currentNode != null) {
-				String nodeLeft = printLeft(currentNode.getLeft());
-				String tmp = tmp + nodeLeft;
-				
-				list.addAll(nodeLeft);
-				list.add(currentNode);
+
+		if (currentNode != null) {
+			if (currentNode.getValue() != root.getValue()) {
+				String left = printLeft(currentNode.getLeft());
+				tmp = left + " " + currentNode.getValue();
+			} else {
+				tmp += currentNode.getValue() + " ";
 			}
-			return tmp;
-		}else {
-			tmp += currentNode.getValue() + " ";
 		}
+		return tmp;
+	}
+	
+	private static String printRight() {
+		return printLeft(root);
+	}
+
+	public static String printRight(Tree currentNode) {
+		String tmp = "";
+
+		if (currentNode != null) {
+			if (currentNode.getValue() != root.getValue()) {
+				String right = printLeft(currentNode.getRight());
+				tmp = currentNode.getValue() + " " + right ;
+			}
+			return printRight(currentNode.getRight());
+		}
+		return tmp;
 	}
 }
 
