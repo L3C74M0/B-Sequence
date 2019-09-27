@@ -3,14 +3,14 @@ package model;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class B_Sequence {
 	private static int sizeOfS;
 	private static int greater;
 	private static int positionGreater;
-	private static Tree root;
-	private static int veces;
-	private static String output;
+	private static List<Integer> toReturn;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -39,37 +39,32 @@ public class B_Sequence {
 		positionGreater = findGreater(elementsOfS);
 		greater = elementsOfS[positionGreater];
 
-		root = new Tree(greater, null, null, null);
-
-		// Agregar el arreglo recibido
-		boolean isGrowing = true;
-		for (int i = 0; i < elementsOfS.length; i++) {
-			Tree toAdd = new Tree(elementsOfS[i], null, null, null);
-
-			if (elementsOfS[i] == greater) {
-				isGrowing = false;
-			}
-
-			addNumber(toAdd, isGrowing);
+		toReturn = new ArrayList<Integer>();
+		for (int i = 0; i < elementsToAdd.length; i++) {
+			toReturn.add(i, elementsOfS[i]);
 		}
 
-		// Agregar elementos recibidos
-		for (int i = 0; i < elementsToAdd.length; i++) {
-			if (elementsToAdd[i] != greater) {
-				if (addValue(elementsToAdd[i]) == true) {
-					sizeOfS++;
-				}
+		for (int i = 0; i < numberOfOperations; i++) {
+			if (elementsToAdd[i] == greater) {
 				System.out.println(sizeOfS);
 			} else {
-				System.out.println(sizeOfS);
+				if (isRight(elementsOfS, elementsToAdd[i])) {
+					System.out.println(sizeOfS);
+				} else {
+					if (isLeft(elementsOfS, elementsToAdd[i])) {
+						// Add derecha
+						addRight(toReturn, elementsToAdd[i]);
+						sizeOfS++;
+						System.out.println(sizeOfS);
+					} else {
+						// Add izquierda
+						addLeft(toReturn, elementsToAdd[i]);
+						System.out.println(sizeOfS);
+						sizeOfS++;
+					}
+				}
 			}
 		}
-
-		orderTree(root, true);
-		output = "";
-		print();
-
-		System.out.println(output);
 	}
 
 	public static int findGreater(int[] array) {
@@ -97,81 +92,31 @@ public class B_Sequence {
 		}
 	}
 
-	// Agregar Recibido
-	public static void addNumber(Tree toAdd, boolean isGrowing) {
-		addNumber(toAdd, isGrowing, root);
+	private static boolean isRight(int[] array, int toSearch) {
+		return is(array, positionGreater + 1, array.length - 1, toSearch);
 	}
 
-	private static void addNumber(Tree toAdd, boolean isGrowing, Tree current) {
-		if (toAdd.getValue() != root.getValue()) {
-			if (isGrowing) {
-				if (current.getLeft() == null) {
-					current.setLeft(toAdd);
-					toAdd.setPrevious(current);
-				} else {
-					addNumber(toAdd, true, current.getLeft());
-				}
-			} else {
-				if (current.getRight() == null) {
-					current.setRight(toAdd);
-					toAdd.setPrevious(current);
-				} else {
-					addNumber(toAdd, false, current.getRight());
-				}
-			}
-		}
+	private static boolean isLeft(int[] array, int toSearch) {
+		return is(array, 0, positionGreater - 1, toSearch);
 	}
 
-	public static boolean addValue(int value) {
-		if (addNumberInTree(value)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+	private static boolean is(int[] array, int i, int j, int toSearch) {
+		boolean izq = false;
+		boolean der = false;
+		int m = (i + j) / 2;
 
-	// Agregar Entradas
-	public static boolean addNumberInTree(int value) {
-		Tree toAdd = new Tree(value, null, null, null);
-		return addNumberInTree(toAdd, root);
-	}
-
-	private static boolean addNumberInTree(Tree toAdd, Tree current) {
-		if (toAdd.getValue() == root.getValue()) {
-			return false;
-		} else {
-			boolean izq = false;
-			boolean der = false;
-
-			if (toAdd.getValue() == current.getValue()) {
-				veces += 1;
+		if (i == j) {
+			if (array[i] == toSearch) {
 				return true;
 			} else {
-				if (current.getLeft() != null) {
-					izq = addNumberInTree(toAdd, current.getLeft());
-				}
-
-				if (current.getRight() != null) {
-					der = addNumberInTree(toAdd, current.getRight());
-				}
-
-				if (current.getLeft() == null) {
-					return false;
-				}
-				if (current.getRight() == null) {
-					return false;
-				}
+				return false;
 			}
+		} else {
+			izq = is(array, i, m, toSearch);
 
-			if (der == true) {
-				return false;
-			} else if (izq == true && der == false) {
-				add(toAdd, false);
-				return true;
-			} else if (veces == 2) {
-				return false;
-			} else if (izq == false) {
-				add(toAdd, true);
+			der = is(array, m + 1, j, toSearch);
+
+			if (izq == true || der == true) {
 				return true;
 			} else {
 				return false;
@@ -179,148 +124,28 @@ public class B_Sequence {
 		}
 	}
 
-	private static void add(Tree toAdd, boolean izq) {
-		add(toAdd, root, izq);
+	private static void addRight(List<Integer> toReturn, int toAdd) {
+		add(toReturn, positionGreater + 1, toReturn.size() - 1, toAdd);
 	}
 
-	private static void add(Tree toAdd, Tree current, boolean izq) {
-		if (izq) {
-			if (current.getLeft() == null) {
-				current.setLeft(toAdd);
-				toAdd.setPrevious(current);
-			} else {
-				add(toAdd, current.getLeft(), izq);
+	private static void addLeft(List<Integer> toReturn, int toAdd) {
+		add(toReturn, 0, positionGreater - 1, toAdd);
+	}
+
+	private static void add(List<Integer> toReturn, int i, int j, int toAdd) {
+		int middle = (i + j) / 2;
+
+		if (i == j) {
+			if (toAdd > toReturn.get(i)) {
+				toReturn.add(i, toAdd);
+			}else {
+			//	add(toReturn,i+1,middle,toAdd)
 			}
 		} else {
-			if (current.getRight() == null) {
-				current.setRight(toAdd);
-				toAdd.setPrevious(current);
-			} else {
-				add(toAdd, current.getRight(), izq);
-			}
+		//	add(toReturn,i,middle,toAdd);
+			//add(toReturn,i,middle,toAdd);
+			
+			
 		}
-	}
-
-	// Ordenar arbol ascendente la rama izquierda y descendente rama derecha
-	private static void orderTree(Tree current, boolean isGrowing) {
-		if (current.getValue() != root.getValue()) {
-			if (current != null) {
-				if (isGrowing) {
-					if (current.getLeft() != null) {
-						if (current.getLeft().getValue() > current.getValue()) {
-							int temp = current.getValue();
-							current.setValue(current.getLeft().getValue());
-							current.getLeft().setValue(temp);
-
-							orderTree(current.getLeft(), true);
-						}
-
-						if (current.getPrevious() != null) {
-							if (current.getPrevious().getValue() < current.getValue()) {
-								int tmp = current.getValue();
-								current.setValue(current.getPrevious().getValue());
-								current.getPrevious().setValue(tmp);
-
-								orderTree(current.getPrevious(), true);
-							}
-						}
-
-						orderTree(current.getLeft(), true);
-					}
-				} else {
-					if (current.getRight() != null) {
-						if (current.getRight().getValue() > current.getValue()) {
-							int temp = current.getValue();
-							current.setValue(current.getRight().getValue());
-							current.getRight().setValue(temp);
-
-							orderTree(current.getRight(), false);
-						}
-
-						if (current.getPrevious() != null) {
-							if (current.getPrevious().getValue() < current.getValue()) {
-								int tmp = current.getValue();
-								current.setValue(current.getPrevious().getValue());
-								current.getPrevious().setValue(tmp);
-
-								orderTree(current.getPrevious(), true);
-							}
-						}
-
-						orderTree(current.getRight(), false);
-					}
-				}
-			}
-		} else {
-			orderTree(current.getLeft(), true);
-			orderTree(current.getRight(), false);
-		}
-	}
-
-	private static void print() {
-		Tree current = root;
-
-		while (current.getLeft() != null) {
-			current = current.getLeft();
-		}
-
-		while (current.getPrevious() != null && current != null) {
-			output += current.getValue() + " ";
-			current = current.getPrevious();
-		}
-
-		output += root.getValue() + " ";
-		current = current.getRight();
-
-		while (current != null) {
-			output += current.getValue() + " ";
-			current = current.getRight();
-		}
-	}
-}
-
-class Tree {
-	private int value;
-	private Tree left;
-	private Tree right;
-	private Tree previous;
-
-	public Tree(int value, Tree left, Tree right, Tree previous) {
-		this.value = value;
-		this.left = left;
-		this.right = right;
-		this.previous = previous;
-	}
-
-	public int getValue() {
-		return value;
-	}
-
-	public void setValue(int value) {
-		this.value = value;
-	}
-
-	public Tree getLeft() {
-		return left;
-	}
-
-	public void setLeft(Tree left) {
-		this.left = left;
-	}
-
-	public Tree getRight() {
-		return right;
-	}
-
-	public void setRight(Tree right) {
-		this.right = right;
-	}
-
-	public Tree getPrevious() {
-		return previous;
-	}
-
-	public void setPrevious(Tree previous) {
-		this.previous = previous;
 	}
 }
