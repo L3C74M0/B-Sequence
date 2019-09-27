@@ -10,6 +10,7 @@ public class B_Sequence {
 	private static int positionGreater;
 	private static Tree root;
 	private static int veces;
+	private static String output;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -65,8 +66,10 @@ public class B_Sequence {
 		}
 
 		orderTree(root, true);
+		output = "";
+		print();
 
-		System.out.println(printLeft() + " " + printRight());
+		System.out.println(output);
 	}
 
 	public static int findGreater(int[] array) {
@@ -254,39 +257,25 @@ public class B_Sequence {
 		}
 	}
 
-	private static String printLeft() {
-		return printLeft(root);
-	}
+	private static void print() {
+		Tree current = root;
 
-	public static String printLeft(Tree currentNode) {
-		String tmp = "";
-
-		if (currentNode != null) {
-			if (currentNode.getValue() != root.getValue()) {
-				String left = printLeft(currentNode.getLeft());
-				tmp = left + " " + currentNode.getValue();
-			} else {
-				tmp += currentNode.getValue() + " ";
-			}
+		while (current.getLeft() != null) {
+			current = current.getLeft();
 		}
-		return tmp;
-	}
-	
-	private static String printRight() {
-		return printLeft(root);
-	}
 
-	public static String printRight(Tree currentNode) {
-		String tmp = "";
-
-		if (currentNode != null) {
-			if (currentNode.getValue() != root.getValue()) {
-				String right = printLeft(currentNode.getRight());
-				tmp = currentNode.getValue() + " " + right ;
-			}
-			return printRight(currentNode.getRight());
+		while (current.getPrevious() != null && current != null) {
+			output += current.getValue() + " ";
+			current = current.getPrevious();
 		}
-		return tmp;
+
+		output += root.getValue() + " ";
+		current = current.getRight();
+
+		while (current != null) {
+			output += current.getValue() + " ";
+			current = current.getRight();
+		}
 	}
 }
 
