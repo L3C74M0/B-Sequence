@@ -52,19 +52,19 @@ public class B_Sequence {
 					System.out.println(sizeOfS);
 				} else {
 					if (isLeft(elementsOfS, elementsToAdd[i])) {
-						// Add derecha
 						addRight(toReturn, elementsToAdd[i]);
 						sizeOfS++;
 						System.out.println(sizeOfS);
 					} else {
-						// Add izquierda
 						addLeft(toReturn, elementsToAdd[i]);
-						System.out.println(sizeOfS);
 						sizeOfS++;
+						System.out.println(sizeOfS);	
 					}
 				}
 			}
 		}
+		
+		System.out.println(toReturn.toString());
 	}
 
 	public static int findGreater(int[] array) {
@@ -125,27 +125,55 @@ public class B_Sequence {
 	}
 
 	private static void addRight(List<Integer> toReturn, int toAdd) {
-		add(toReturn, positionGreater + 1, toReturn.size() - 1, toAdd);
+		addRight(toReturn, positionGreater + 1, toReturn.size() - 1, toAdd);
 	}
 
 	private static void addLeft(List<Integer> toReturn, int toAdd) {
-		add(toReturn, 0, positionGreater - 1, toAdd);
+		addLeft(toReturn, 0, positionGreater - 1, toAdd);
 	}
 
-	private static void add(List<Integer> toReturn, int i, int j, int toAdd) {
+	private static void addRight(List<Integer> toReturn, int i, int j, int toAdd) {
 		int middle = (i + j) / 2;
+		boolean is = false;
+		int m = (i + j) / 2;
+
+		if (i == j) {
+			if (toAdd < toReturn.get(i)) {
+				toReturn.add(toAdd);
+				is = true;
+			}else if(toAdd > toReturn.get(i)) {
+				toReturn.add(i , toAdd);
+				is = true;
+			}
+		} else {
+			if(!is) {
+				addRight(toReturn, i, m, toAdd);
+			}
+			if(!is) {
+				addRight(toReturn, m + 1, j, toAdd);
+			}
+		}
+	}
+	
+	private static void addLeft(List<Integer> toReturn, int i, int j, int toAdd) {
+		int middle = (i + j) / 2;
+		boolean is = false;
+		int m = (i + j) / 2;
 
 		if (i == j) {
 			if (toAdd > toReturn.get(i)) {
-				toReturn.add(i, toAdd);
-			}else {
-			//	add(toReturn,i+1,middle,toAdd)
+				toReturn.add(i+1 , toAdd);
+				is = true;
 			}
 		} else {
-		//	add(toReturn,i,middle,toAdd);
-			//add(toReturn,i,middle,toAdd);
-			
-			
-		}
+			if(!is) {
+				addLeft(toReturn, m + 1, j, toAdd);
+			}
+			if(!is) {
+				addLeft(toReturn, i, m, toAdd);
+			}
+		}	
+		
+		//boolean para saber si esta
 	}
 }
