@@ -40,19 +40,16 @@ public class B_Sequence {
 
 		root = new Tree(greater, null, null, null);
 
-//		int[] toReturn = new int[elementsOfS.length + elementsToAdd.length];
-
 		// Agregar el arreglo recibido
 		boolean isGrowing = true;
 		for (int i = 0; i < elementsOfS.length; i++) {
 			Tree toAdd = new Tree(elementsOfS[i], null, null, null);
-			
+
 			if (elementsOfS[i] == greater) {
 				isGrowing = false;
 			}
 
 			addNumber(toAdd, isGrowing);
-
 		}
 
 		// Agregar elementos recibidos
@@ -63,14 +60,17 @@ public class B_Sequence {
 				}
 				System.out.println(sizeOfS);
 			} else {
-				System.out.println("\t No lo agrega\t");
-				System.out.print(sizeOfS + "\n");
+				System.out.println(sizeOfS);
 			}
 		}
-		
-		
-		//ordenar arbol de menor a mayor
-		//imprimirlo
+
+		orderTree(root, true);
+
+		String output = "";
+
+		// Recorrer indorder to root then preorder to root
+
+		System.out.println(output);
 	}
 
 	public static int findGreater(int[] array) {
@@ -97,13 +97,6 @@ public class B_Sequence {
 			}
 		}
 	}
-
-	// Buscar mayor y ponerlo de root
-	// RellenarArbol
-	// agregar a arbol izq si hay valor menor cambiarlo si ya esta intentar
-	// agregarlo a la der de la misma manera si ya esta no agregar
-	// repetir maximo dos veces mismo numero
-	// Convertir arbol en arreglo y retornar tamaño
 
 	// Agregar Recibido
 	public static void addNumber(Tree toAdd, boolean isGrowing) {
@@ -150,68 +143,138 @@ public class B_Sequence {
 		} else {
 			boolean izq = false;
 			boolean der = false;
-			
+
 			if (toAdd.getValue() == current.getValue()) {
-				System.out.println("\tYa esta");
-				veces+=1;
+				veces += 1;
 				return true;
 			} else {
 				if (current.getLeft() != null) {
 					izq = addNumberInTree(toAdd, current.getLeft());
 				}
-				
+
 				if (current.getRight() != null) {
 					der = addNumberInTree(toAdd, current.getRight());
 				}
 
-				if(current.getLeft()==null) {
+				if (current.getLeft() == null) {
 					return false;
 				}
-				if(current.getRight()==null) {
+				if (current.getRight() == null) {
 					return false;
 				}
 			}
-			
+
 			if (der == true) {
-				System.out.println("\tYa esta en los dos lados");
 				return false;
 			} else if (izq == true && der == false) {
-				// agregar en la derecha
-				System.out.println("\tAgregar en la der");
-				add(toAdd,false);
+				add(toAdd, false);
 				return true;
-			}else if(veces == 2){
+			} else if (veces == 2) {
 				return false;
 			} else if (izq == false) {
-				// Agregar en la izq
-				System.out.println("\tAgregar en la izq");
-				add(toAdd,true);
+				add(toAdd, true);
 				return true;
 			} else {
 				return false;
 			}
 		}
 	}
-	
+
 	private static void add(Tree toAdd, boolean izq) {
-		add(toAdd,root, izq);
+		add(toAdd, root, izq);
 	}
-	
+
 	private static void add(Tree toAdd, Tree current, boolean izq) {
-		if(izq) {
+		if (izq) {
 			if (current.getLeft() == null) {
 				current.setLeft(toAdd);
 				toAdd.setPrevious(current);
 			} else {
-				add(toAdd, current.getLeft(),izq);
+				add(toAdd, current.getLeft(), izq);
 			}
 		} else {
 			if (current.getRight() == null) {
 				current.setRight(toAdd);
 				toAdd.setPrevious(current);
 			} else {
-				add(toAdd,current.getRight(),izq);
+				add(toAdd, current.getRight(), izq);
 			}
+		}
+	}
+
+	// Ordenar arbol ascendente la rama izquierda y descendente rama derecha
+	private static void orderTree(Tree current, boolean isGrowing) {
+		if (current.getValue() != root.getValue()) {
+			if (current != null) {
+				if (isGrowing) {
+					if (current.getLeft() != null) {
+						if (current.getLeft().getValue() > current.getValue()) {
+							int temp = current.getValue();
+							current.setValue(current.getLeft().getValue());
+							current.getLeft().setValue(temp);
+
+							orderTree(current.getLeft(), true);
+						}
+
+						if (current.getPrevious() != null) {
+							if (current.getPrevious().getValue() < current.getValue()) {
+								int tmp = current.getValue();
+								current.setValue(current.getPrevious().getValue());
+								current.getPrevious().setValue(tmp);
+
+								orderTree(current.getPrevious(), true);
+							}
+						}
+
+						orderTree(current.getLeft(), true);
+					}
+				} else {
+					if (current.getRight() != null) {
+						if (current.getRight().getValue() > current.getValue()) {
+							int temp = current.getValue();
+							current.setValue(current.getRight().getValue());
+							current.getRight().setValue(temp);
+
+							orderTree(current.getRight(), false);
+						}
+
+						if (current.getPrevious() != null) {
+							if (current.getPrevious().getValue() < current.getValue()) {
+								int tmp = current.getValue();
+								current.setValue(current.getPrevious().getValue());
+								current.getPrevious().setValue(tmp);
+
+								orderTree(current.getPrevious(), true);
+							}
+						}
+
+						orderTree(current.getRight(), false);
+					}
+				}
+			}
+		} else {
+			orderTree(current.getLeft(), true);
+			orderTree(current.getRight(), false);
+		}
+	}
+
+	private static String printLeft() {
+		return printLeft(root);
+	}
+
+	public static String printLeft(Tree currentNode) {
+		String tmp = "";
+		if (currentNode.getValue() != root.getValue()) {
+			if (currentNode != null) {
+				String nodeLeft = printLeft(currentNode.getLeft());
+				String tmp = tmp + nodeLeft;
+				
+				list.addAll(nodeLeft);
+				list.add(currentNode);
+			}
+			return tmp;
+		}else {
+			tmp += currentNode.getValue() + " ";
 		}
 	}
 }
